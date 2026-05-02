@@ -1,0 +1,186 @@
+{
+    "protocol_version": "1.1",
+    "description": "Shared command/response schemas for Hive Hardware Agents (win32 & linux)",
+    "commands": {
+        "STATUS": {
+            "description": "Query current agent state",
+            "parameters": {}
+        },
+        "GET_TELEMETRY": {
+            "description": "Request system telemetry and vitality score",
+            "parameters": {}
+        },
+        "SCAN": {
+            "description": "Scan for WiFi Direct groups (scans for DIRECT-SSIDs)",
+            "parameters": {
+                "duration": {
+                    "type": "integer",
+                    "description": "Scan duration in seconds",
+                    "default": 5
+                }
+            }
+        },
+        "CONNECT": {
+            "description": "Connect to a WiFi Direct group as a client",
+            "parameters": {
+                "uuid": {
+                    "type": "string",
+                    "description": "SSID or BSSID from scan results",
+                    "required": true
+                },
+                "passphrase": {
+                    "type": "string",
+                    "description": "WPA2 passphrase",
+                    "default": "Hive12345678"
+                }
+            }
+        },
+        "DISCONNECT": {
+            "description": "Disconnect from current WiFi Direct group",
+            "parameters": {}
+        },
+        "CREATE_GROUP": {
+            "description": "Create a WiFi Direct group as Group Owner",
+            "parameters": {
+                "device_id": {
+                    "type": "string",
+                    "description": "Suffix for SSID (DIRECT-HV-<device_id>)",
+                    "required": true
+                },
+                "ruthless_mode": {
+                    "type": "boolean",
+                    "description": "Force 2.4 GHz for compatibility",
+                    "default": false
+                }
+            }
+        },
+        "STOP_GROUP": {
+            "description": "Stop advertising and destroy current group",
+            "parameters": {}
+        },
+        "START_DATA_PLANE": {
+            "description": "Start Named Pipe (Win) or Unix Socket (Linux) for raw data streaming",
+            "parameters": {
+                "peer_ip": {
+                    "type": "string",
+                    "description": "IP of the peer to connect to (client mode only)"
+                },
+                "peer_port": {
+                    "type": "integer",
+                    "description": "Port to connect to or listen on",
+                    "default": 5001
+                }
+            }
+        },
+        "STOP_DATA_PLANE": {
+            "description": "Stop data plane streaming server",
+            "parameters": {}
+        },
+        "SHUTDOWN": {
+            "description": "Gracefully terminate the agent",
+            "parameters": {}
+        }
+    },
+    "responses": {
+        "STATUS": {
+            "type": "object",
+            "fields": {
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "READY",
+                        "DISCONNECTED",
+                        "SCANNING",
+                        "ASSOCIATING",
+                        "CONNECTED_AS_CLIENT",
+                        "CONNECTED_AS_GO"
+                    ],
+                    "description": "Current agent state"
+                },
+                "message": {
+                    "type": "string",
+                    "description": "Human-readable status message"
+                }
+            }
+        },
+        "TELEMETRY": {
+            "type": "object",
+            "fields": {
+                "on_ac_power": {
+                    "type": "boolean",
+                    "description": "True if on AC power, false if on battery"
+                },
+                "ram_gb": {
+                    "type": "integer",
+                    "description": "Total system RAM in GB"
+                },
+                "logical_cores": {
+                    "type": "integer",
+                    "description": "Number of logical CPU cores"
+                },
+                "vitality_score": {
+                    "type": "integer",
+                    "description": "Calculated election score based on system capabilities"
+                }
+            }
+        },
+        "SCAN_RESULT": {
+            "type": "object",
+            "fields": {
+                "groups": {
+                    "type": "array",
+                    "items": {
+                        "uuid": "string",
+                        "name": "string",
+                        "rssi": "integer"
+                    }
+                }
+            }
+        },
+        "CONNECTED": {
+            "type": "object",
+            "fields": {
+                "group_uuid": {
+                    "type": "string",
+                    "description": "UUID of connected group"
+                },
+                "assigned_ip": {
+                    "type": "string",
+                    "description": "DHCP-assigned or P2P-derived IP address"
+                },
+                "remote_ip": {
+                    "type": "string",
+                    "description": "IP of the Group Owner / Gateway"
+                },
+                "is_group_owner": {
+                    "type": "boolean",
+                    "description": "True if this device is the Group Owner"
+                }
+            }
+        },
+        "GROUP_CREATED": {
+            "type": "object",
+            "fields": {
+                "group_name": "string",
+                "passphrase": "string",
+                "is_group_owner": "boolean"
+            }
+        },
+        "DATA_PLANE_STARTED": {
+            "type": "object",
+            "fields": {
+                "pipe_path": "string",
+                "socket_path": "string",
+                "status": "string"
+            }
+        },
+        "ERROR": {
+            "type": "object",
+            "fields": {
+                "error_code": "string",
+                "message": "string",
+                "context": "string"
+            }
+        }
+    }
+}
