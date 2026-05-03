@@ -1,8 +1,8 @@
-# Hive: System Architecture & Protocol Specification
+# <img src="app/assets/HiveBee.png" width="76" align="center"> Hive: Home Interconnections Versatile Extensible
 
 | Metadata | Details |
 | :--- | :--- |
-| **Version** | 1.1.0 |
+| **Version** | 1.1.1 |
 | **Scope** | Infrastructure-less P2P Communication & Resilient File Transfer |
 | **Target** | Windows (WinRT) & Linux (D-Bus) |
 
@@ -10,7 +10,7 @@
 
 ## 1. Summary
 
-**Hive (Home Interconnections Versatile Extensible)** is a cross-platform system enabling devices to spontaneously form a high-speed local network and exchange files/messages without a router, internet access, or manual configuration.
+**Hive** is a cross-platform system enabling devices to spontaneously form a high-speed local network and exchange files/messages without a router, internet access, or manual configuration.
 
 It utilizes a 2-Layer architecture to decouple the Physical Link from the Logical Link, ensuring stability even if the physical network topology changes. Hive primarily utilizes Wi-Fi Direct technology.
 
@@ -147,9 +147,17 @@ Raw binary data is streamed via the C++ agent's high-performance raw relay bridg
 
 ---
 
-## 9. Implementation Directives
+## 9. User Interface
 
-### 9.1 Directory Structure
+The Hive interface is designed for high-visibility and ease of use with a dark-themed aesthetic, as shown in the image below:
+
+![Hive User Interface](app/assets/HiveScreen.png)
+
+---
+
+## 10. Implementation Directives
+
+### 10.1 Directory Structure
 
 ```text
 Hive/
@@ -185,41 +193,35 @@ Hive/
 └── hive.spec
 ```
 
----
-
-## 10. Project Roadmap & Documentation
+## 11. Project Roadmap & Documentation
 For detailed guides on usage, testing, and development, refer to:
 * [SPECIFICATION.md](docs/SPECIFICATION.md): Detailed protocol and state definitions.
 * [DEVELOPMENT_AND_BUILD.md](docs/DEVELOPMENT_AND_BUILD.md): Compilation and integration guide.
 * [USAGE_AND_TESTING.md](docs/USAGE_AND_TESTING.md): Swarm workflows, hardware setup, and automated testing.
 * [RESEARCH_AND_HISTORY.md](docs/RESEARCH_AND_HISTORY.md): Evolution of the Sidecar pattern and breakthroughs.
 
----
+## 12. Development & CLI Usage
 
-## 11. Development & CLI Usage
-
-### 11.1 Build & Test
+### 12.1 Build & Test
 To build the release bundle and run the test suite:
 ```powershell
 python dist_tools\build.py
 ```
 
-### 11.2 Launch Options
+### 12.2 Launch Options
 The Hive executable supports the following flags:
 * `--debug`: Enables verbose DEBUG logging to stderr.
 * `--inspector`: Performs an end-to-end hardware and connectivity check.
 * `--pin <4-digit PIN>`: Sets the Room PIN for session encryption (Default: 0000).
 * `--mock <path>`: Allows developers to point to a custom mock agent binary.
 
-### 11.3 Swarm Simulation (Local)
+### 12.3 Swarm Simulation (Local)
 To verify the multi-instance and election logic without WiFi hardware:
 ```powershell
 pytest tests/integration/test_local_cluster.py -v -s
 ```
 
----
-
-## 12. Performance Optimization
+## 13. Performance Optimization
 
 * **Chunk Size:** 128 KB per encrypted chunk — optimized for Windows `asyncio` loop stability and high-frequency UI updates.
 * **TCP Buffering:** Match-tuned 128KB relay buffers in C++ to prevent IPC bottlenecks.

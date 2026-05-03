@@ -131,8 +131,12 @@ def test_prune_stale_peers_removes_old_nodes():
     removed = []
     nm.on_peer_left = lambda uid: removed.append(uid)
     nm.peers["old"] = {"name": "old", "score": 1, "ip": "10.0.0.2", "last_seen": 0}
+    nm._rtt_samples["old"] = [10.0]
+    nm._hb_miss_count["old"] = 5
 
     nm._prune_stale_peers()
 
     assert "old" not in nm.peers
+    assert "old" not in nm._rtt_samples
+    assert "old" not in nm._hb_miss_count
     assert removed == ["old"]

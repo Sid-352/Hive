@@ -89,7 +89,7 @@ def test_on_connected_starts_overlay_and_data_plane(tmp_path, monkeypatch):
     asyncio.run(c._on_connected({"assigned_ip": "192.168.49.5"}))
 
     assert c.network.started_with == "192.168.49.5"
-    assert {"type": "START_DATA_PLANE", "peer_port": controller_module.P2P_PORT} in sent_commands
+    assert any(c.get("type") == "START_DATA_PLANE" and c.get("peer_port") == controller_module.P2P_PORT for c in sent_commands)
     assert c._connection_mode == "CLIENT"
     assert (controller_module.HiveEvent.NETWORK_STATE_CHANGED, "CLIENT") in events
     assert (controller_module.HiveEvent.SHOW_SCREEN, "session") in events
@@ -111,13 +111,15 @@ def test_leave_session_uses_connection_mode_for_disconnect(tmp_path, monkeypatch
     monkeypatch.setattr(c, "_send_agent_command", fake_send_agent_command)
 
     asyncio.run(c._leave_session_async())
-    assert sent == [{"type": "STOP_DATA_PLANE"}, {"type": "STOP_GROUP"}]
+    assert [c["type"] for c in sent] == ["STOP_DATA_PLANE", "STOP_GROUP"]
+    assert all("trace_id" in c for c in sent)
 
     sent.clear()
     c._leaving_session = False  # reset gate for second call
     c._connection_mode = "CLIENT"
     asyncio.run(c._leave_session_async())
-    assert sent == [{"type": "STOP_DATA_PLANE"}, {"type": "DISCONNECT"}]
+    assert [c["type"] for c in sent] == ["STOP_DATA_PLANE", "DISCONNECT"]
+    assert all("trace_id" in c for c in sent)
 
 
 def test_execute_p2p_receive_uses_resume_offset_and_sanitized_path(tmp_path, monkeypatch):

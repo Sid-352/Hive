@@ -69,7 +69,7 @@ class HiveDroneAPI:
                 self.ctrl.scan_groups()
                 response = {"status": "success", "message": "Scan started"}
             elif cmd == "host":
-                self.ctrl.host_group(r=request.get("ruthless", False))
+                self.ctrl.host_group(ruthless=request.get("ruthless", False))
                 response = {"status": "success", "message": "Hosting swarm"}
             elif cmd == "join":
                 u = request.get("uuid")

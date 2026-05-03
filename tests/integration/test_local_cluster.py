@@ -17,7 +17,7 @@ class MockAsyncHardwareAgent:
         self.node_id = node_id
         self.response_queue = asyncio.Queue()
         self.running = False
-        self.version = "1.1.0"
+        self.version = "1.1.1"
         self.vitality_score = 50
         self._exe_path = "mock_agent.exe"
 

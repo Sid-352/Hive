@@ -601,7 +601,6 @@ class HiveMainWindow(QMainWindow):
     def set_session_peers(self, peers):
         self.bus.peers_updated.emit(peers)
         self.screens["session"].set_peers(peers)
-        self.screens["transfer"].set_targets(peers)
 
     def set_transfer_targets(self, peers):
         self.screens["transfer"].set_targets(peers)

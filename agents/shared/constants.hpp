@@ -2,7 +2,7 @@
 #define HIVE_CONSTANTS_HPP
 
 namespace Hive {
-    const char* const AGENT_VERSION = "1.1.0";
+    const char* const AGENT_VERSION = "1.1.1";
     const char* const PROTOCOL_VERSION = "1.5";
 
     const uint32_t BZZZ_MAGIC = 0x425A5A5A;

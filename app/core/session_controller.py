@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import socket
+import uuid
 
 import psutil
 
@@ -127,7 +128,8 @@ class SessionController:
 
     async def on_disconnected(self) -> None:
         owner = self._owner
-        logger.info("[Session] Agent signaled disconnected")
+        trace_id = str(uuid.uuid4())[:8]
+        logger.info("[Session][%s] Agent signaled disconnected", trace_id)
         try:
             if owner.dp:
                 await owner.dp.disconnect()
@@ -135,7 +137,7 @@ class SessionController:
             pass
         owner.dp = None
 
-        await owner._send_agent_command({"type": "STOP_DATA_PLANE"})
+        await owner._send_agent_command({"type": "STOP_DATA_PLANE", "trace_id": trace_id})
 
         if owner.network:
             try:
@@ -172,9 +174,10 @@ class SessionController:
                 owner._ip_poll_task.cancel()
             if owner.network and owner.network.host_uuid == owner.my_uuid:
                 await owner.network.broadcast_retirement()
+            trace_id = str(uuid.uuid4())[:8]
             cmd_type = "STOP_GROUP" if owner._connection_mode == "HOST" else "DISCONNECT"
-            await owner._send_agent_command({"type": "STOP_DATA_PLANE"})
-            await owner._send_agent_command({"type": cmd_type})
+            await owner._send_agent_command({"type": "STOP_DATA_PLANE", "trace_id": trace_id})
+            await owner._send_agent_command({"type": cmd_type, "trace_id": trace_id})
             if owner.network:
                 await owner.network.stop()
             if owner.dp:

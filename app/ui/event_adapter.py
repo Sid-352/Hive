@@ -19,6 +19,7 @@ class UiEventAdapter:
         bus.subscribe(HiveEvent.TRANSFER_ERROR, self._on_transfer_error)
         bus.subscribe(HiveEvent.SEND_COMPLETE, self._on_send_complete)
         bus.subscribe(HiveEvent.RECEIVE_COMPLETE, self._on_receive_complete)
+        bus.subscribe(HiveEvent.INCOMING_TRANSFER, self._on_incoming_transfer)
         bus.subscribe(HiveEvent.SHOW_SCREEN, self._on_show_screen)
 
     def _on_status(self, event, data) -> None:
@@ -69,6 +70,9 @@ class UiEventAdapter:
 
     def _on_receive_complete(self, event, data) -> None:
         self._window.receive_complete()
+
+    def _on_incoming_transfer(self, event, data) -> None:
+        self._window.mark_received(int(data))
 
     def _on_show_screen(self, event, data) -> None:
         name = str(data).lower()

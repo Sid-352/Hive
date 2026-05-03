@@ -30,6 +30,7 @@ class TransferController:
             return
         requester_ip = writer.get_extra_info("peername")[0] if writer else ""
         if requester_ip:
+            owner.bus.publish(HiveEvent.INCOMING_TRANSFER, data.get("size", 0), trace_id=trace_id)
             await owner.network.send_transfer_permit(writer, requester_ip, owner.network.p2p_port, trace_id=trace_id)
 
     def on_transfer_permit(self, data: dict) -> None:
@@ -112,10 +113,10 @@ class TransferController:
                 except OSError:
                     pass
 
-                await owner._send_agent_command({"type": "STOP_DATA_PLANE"})
+                await owner._send_agent_command({"type": "STOP_DATA_PLANE", "trace_id": trace_id})
                 await asyncio.sleep(0.5)
                 await owner._send_agent_command(
-                    {"type": "START_DATA_PLANE", "peer_ip": ip, "peer_port": port}
+                    {"type": "START_DATA_PLANE", "peer_ip": ip, "peer_port": port, "trace_id": trace_id}
                 )
 
                 for _ in range(30):
@@ -189,8 +190,7 @@ class TransferController:
                 if os.path.exists(dest):
                     existing_size = os.path.getsize(dest)
                     if existing_size < handshake.file_meta.size:
-                        loop = asyncio.get_event_loop()
-                        res_fut = loop.create_future()
+                        res_fut = owner._loop.create_future()
                         owner._ui_call_with_future(
                             res_fut,
                             "confirm_resume",
@@ -240,21 +240,22 @@ class TransferController:
                 if not (owner.dp and owner.dp._connected):
                     await owner._reset_data_plane()
 
-    async def reset_data_plane(self) -> None:
+    async def reset_data_plane(self, trace_id="TX-RESET") -> None:
         owner = self._owner
         try:
             if owner.dp:
                 await owner.dp.disconnect()
         except OSError:
             pass
-
-        await owner._send_agent_command({"type": "STOP_DATA_PLANE"})
+        owner.dp = None
+        await owner._send_agent_command({"type": "STOP_DATA_PLANE", "trace_id": trace_id})
         await asyncio.sleep(0.3)
         if owner._connection_mode != "IDLE" and owner._running:
             await owner._send_agent_command(
                 {
                     "type": "START_DATA_PLANE",
                     "peer_port": owner.network.p2p_port if owner.network else P2P_PORT,
+                    "trace_id": trace_id
                 }
             )
 

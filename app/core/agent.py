@@ -57,8 +57,8 @@ class AsyncHardwareAgent:
         self._stderr_task: Optional[asyncio.Task] = None
         self._start_lock = asyncio.Lock()
         self.running = False
+        self.version = "unknown"
         self.response_queue = asyncio.Queue()
-        self.version = "UNKNOWN"
 
     async def start(self) -> None:
         async with self._start_lock:

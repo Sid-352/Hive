@@ -7,7 +7,7 @@ The `AsyncHardwareAgent` class serves as a high-speed bridge between the Python 
 ### Boot Sequence
 On startup, the agent binary immediately emits a `READY` status message:
 ```json
-{"type":"STATUS", "state":"READY", "message":"Hardware agent initialized", "version": "1.1.0"}
+{"type":"STATUS", "state":"READY", "message":"Hardware agent initialized", "version": "1.1.1"}
 ```
 The Python `start()` method is a blocking coroutine that waits for this specific signal. This ensures that no commands (like `SCAN` or `CREATE_GROUP`) are sent before the low-level Wi-Fi stack is fully initialized.
 

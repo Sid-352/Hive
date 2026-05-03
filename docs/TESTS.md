@@ -1,4 +1,4 @@
-# Hive: Verification & Validation Results (v1.1.0)
+# Hive: Verification & Validation Results (v1.1.1)
 
 **1. FAULT TOLERANCE & AUTO-RECOVERY**
 * **Test:** Wi-Fi disable/enable simulation during active transfer.

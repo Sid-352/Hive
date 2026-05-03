@@ -72,6 +72,6 @@ pytest tests/integration/test_hybrid_data_plane.py -v -s
 * **Issue: "Requesting Permission" hangs.**
     * *Fix:* Ensure `setup-hive.ps1` was run on both machines.
 * **Issue: "Network name no longer available" (WinError 64).**
-    * *Fix:* A transient link drop. Hive v1.1.0 handles this by re-polling the adapter automatically.
+    * *Fix:* A transient link drop. Hive v1.1.1 handles this by re-polling the adapter automatically.
 * **Issue: Node visibility is slow.**
     * *Fix:* Close 3rd party P2P apps (e.g. KDE Connect) that might be competing for the radio.

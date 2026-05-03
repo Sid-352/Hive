@@ -220,7 +220,7 @@ def test_agent_survives_malformed_json():
 def test_agent_version_format():
     """
     The READY event must include a 'version' field in MAJOR.MINOR.PATCH
-    format (e.g. '1.1.0').
+    format (e.g. '1.1.1').
     """
     _skip_if_unavailable()
 

@@ -29,6 +29,7 @@ class HiveEvent(str, Enum):
     HOST_ELECTED      = "HOST_ELECTED"
     CHAT_RECEIVED     = "CHAT_RECEIVED"
     LOG_MESSAGE       = "LOG_MESSAGE"
+    INCOMING_TRANSFER = "INCOMING_TRANSFER"
 
 
 class _Ref:

@@ -541,6 +541,8 @@ class NetworkManager:
                 self.on_peer_left(uid)
             if self.bus:
                 self.bus.publish(HiveEvent.PEER_LEFT, uid)
+            for d in [self._rtt_samples, self._avg_rtt, self._jitter, self._hb_last_success, self._hb_miss_count]:
+                d.pop(uid, None)
         if removed:
             self._elect_host(trace_id="PRUNE")
 
@@ -593,6 +595,7 @@ class NetworkManager:
                     self.on_transfer_permit(
                         {"target_ip": peer["ip"], "target_port": permit.target_port, "trace_id": trace_id})
             w.close()
+            await w.wait_closed()
         except Exception as e:
             logger.error("[Network][%s] Failed to send transfer request: %s", trace_id, e)
 
@@ -606,6 +609,7 @@ class NetworkManager:
         logger.info("[Network][%s] Sending transfer permit to %s:%d", trace_id, target_ip, target_port)
         await _send_packet(writer, MSG_P2P_PERMIT, self.security.encrypt(json.dumps(data).encode()))
         writer.close()
+        await writer.wait_closed()
 
     async def send_p2p_handshake(
             self,
